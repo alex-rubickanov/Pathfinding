@@ -152,9 +152,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adb509036a62aea409b67a10e5a4fae0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  height: 7
-  width: 45
+  width: 10
+  height: 10
+  getNodeTest: {x: 5, y: 3}
   nodePrefab: {fileID: 5197723688832040032, guid: 1e09ed982bd080547b6fec4908594a98, type: 3}
+  nodes: []
+  startPos: {x: 2, y: 2}
+  goalPos: {x: 5, y: 5}
 --- !u!4 &38254477
 Transform:
   m_ObjectHideFlags: 0
