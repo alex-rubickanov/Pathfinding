@@ -133,6 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 38254477}
   - component: {fileID: 38254476}
+  - component: {fileID: 38254478}
   m_Layer: 0
   m_Name: Grid
   m_TagString: Untagged
@@ -157,8 +158,6 @@ MonoBehaviour:
   getNodeTest: {x: 5, y: 3}
   nodePrefab: {fileID: 5197723688832040032, guid: 1e09ed982bd080547b6fec4908594a98, type: 3}
   nodes: []
-  startPos: {x: 2, y: 2}
-  goalPos: {x: 5, y: 5}
 --- !u!4 &38254477
 Transform:
   m_ObjectHideFlags: 0
@@ -174,6 +173,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &38254478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 38254475}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb4b25383c5d2e54a88164a9b5019716, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startPos: {x: 2, y: 2}
+  goalPos: {x: 4, y: 4}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0

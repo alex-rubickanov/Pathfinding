@@ -3,7 +3,9 @@ using UnityEngine;
 
 public class Node : MonoBehaviour
 {
-    private int x, y;
+    public int x, y;
+    private Node parent;
+
     [SerializeField] private TextMeshProUGUI coordinates;
     
     [SerializeField] private TextMeshProUGUI fCost;
@@ -27,13 +29,18 @@ public class Node : MonoBehaviour
         y = newY;
     }
 
-    public void SetupVariables(Vector2Int startNodePos, Vector2Int finishNodePos)
+    public void SetupVariables(Node startNode, Node goalNode)
     {
-        int g = (Mathf.Abs(startNodePos.x - x) + Mathf.Abs(startNodePos.y - y)) * 10;
+        int g = (Mathf.Abs(startNode.x - x) + Mathf.Abs(startNode.y - y)) * 10;
         gCost.text = g.ToString();
-        int h = (Mathf.Abs(finishNodePos.x - x) + Mathf.Abs(finishNodePos.y - y)) * 10;
+        int h = (Mathf.Abs(goalNode.x - x) + Mathf.Abs(goalNode.y - y)) * 10;
         hCost.text = h.ToString();
         int f = g + h;
         fCost.text = f.ToString();
+    }
+
+    public void SetParent(Node node)
+    {
+        parent = node;
     }
 }
