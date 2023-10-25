@@ -1,39 +1,22 @@
-using TMPro;
 using UnityEngine;
 
-public class Node : MonoBehaviour
+public class Node
 {
-    private int x, y;
-    [SerializeField] private TextMeshProUGUI coordinates;
-    
-    [SerializeField] private TextMeshProUGUI fCost;
-    [SerializeField] private TextMeshProUGUI gCost;
-    [SerializeField] private TextMeshProUGUI hCost;
-    
-    private int f; // sum of g and h
-    
-    private int g; // to start point
-    private int h; // to goal point
+    public bool walkable;
+    public Vector3 worldPosition;
+    public int gridX, gridY;
 
-    private void Start()
+    public int gCost, hCost;
+
+    public Node parent;
+    public int fCost => gCost + hCost;
+
+    public Node(bool walkable, Vector3 worldPosition, int gridX, int gridY)
     {
-        coordinates.text = $"{x.ToString()}, {y.ToString()}";
+        this.walkable = walkable;
+        this.worldPosition = worldPosition;
+        this.gridX = gridX;
+        this.gridY = gridY;
     }
 
-
-    public void SetCoordinates(int newX, int newY)
-    {
-        x = newX;
-        y = newY;
-    }
-
-    public void SetupVariables(Vector2Int startNodePos, Vector2Int finishNodePos)
-    {
-        int g = (Mathf.Abs(startNodePos.x - x) + Mathf.Abs(startNodePos.y - y)) * 10;
-        gCost.text = g.ToString();
-        int h = (Mathf.Abs(finishNodePos.x - x) + Mathf.Abs(finishNodePos.y - y)) * 10;
-        hCost.text = h.ToString();
-        int f = g + h;
-        fCost.text = f.ToString();
-    }
 }

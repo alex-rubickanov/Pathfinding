@@ -1,62 +1,103 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
 
 public class Grid : MonoBehaviour
 {
-    [SerializeField] private int width;
-    [SerializeField] private int height;
-    [SerializeField] private Vector2Int getNodeTest;
-    
-    [SerializeField] private GameObject nodePrefab;
+    public Transform player;
+    public LayerMask unwalkableMask;
+    public Vector2 gridWorldSize;
+    public float nodeRadius;
+    private Node[,] grid;
 
-    [SerializeField] private List<Node> nodes;
-
-    [SerializeField] private Vector2Int startPos;
-    [SerializeField] private Vector2Int goalPos;
-    
+    private float nodeDiameter;
+    private int gridSizeX, gridSizeY;
 
     private void Start()
     {
-        nodes = new List<Node>();
-        GenerateGrid();
-
-        GetNode(startPos).GetComponent<MeshRenderer>().material.color = Color.green;
-        GetNode(goalPos).GetComponent<MeshRenderer>().material.color = Color.red;
+        nodeDiameter = nodeRadius * 2;
+        gridSizeX = Mathf.RoundToInt(gridWorldSize.x/nodeDiameter);
+        gridSizeY = Mathf.RoundToInt(gridWorldSize.y/nodeDiameter);
+        CreateGrid();
     }
 
-    private void GenerateGrid()
+    private void CreateGrid()
     {
-        for(int y = 0; y < width; y++)
+        grid = new Node[gridSizeX, gridSizeY];
+        Vector3 worldBottomLeft =
+            transform.position - Vector3.right * gridWorldSize.x / 2 - Vector3.forward * gridWorldSize.y / 2;
+
+        for (int x = 0; x < gridSizeX; x++)
         {
-            for(int x = 0; x < height; x++)
+            for (int y = 0; y < gridSizeY; y++)
             {
-                Node node = Instantiate(nodePrefab, new Vector3(x, 0, y), Quaternion.identity, transform).GetComponent<Node>();
-                
-                nodes.Add(node);
-                
-                node.SetCoordinates(x, y);
-                node.SetupVariables(startPos, goalPos);
+                Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) +
+                                     Vector3.forward * (y * nodeDiameter + nodeRadius);
+                bool walkable = !(Physics.CheckSphere(worldPoint, nodeRadius, unwalkableMask));
+                grid[x, y] = new Node(walkable, worldPoint, x, y);
             }
         }
     }
 
-    
-    
-    public Node GetNode(Vector2Int gridPosition)
+    public List<Node> GetNeighbours(Node node)
     {
-        try
-        {
-            int index = gridPosition.x + gridPosition.y * width;
+        List<Node> neighbours = new List<Node>();
 
-            return nodes[index];
-        }
-        catch (Exception e)
+        for (int x = -1; x <= 1; x++)
         {
-            Debug.LogError("WRITE A VECTOR WITH X LESS THAN WIDTH AND Y LESS THAN HEIGHT!");
-            Debug.LogError("AND BOTH OF THEM SUPPOSED TO BE GREATER THAN 0 YOU STUPIDO");
-            return null;
+            for (int y = -1; y <= 1; y++)
+            {
+                if (x == 0 && y == 0) continue;
+
+                int checkX = node.gridX + x;
+                int checkY = node.gridY + y;
+
+                if (checkX >= 0 && checkX < gridSizeX && checkY >= 0 && checkY < gridSizeY)
+                {
+                    neighbours.Add(grid[checkX,checkY]);
+                }
+            }
+        }
+
+        return neighbours;
+    }
+
+    public Node GetNodeFromWorldPoint(Vector3 worldPosition)
+    {
+        float percentX = (worldPosition.x - transform.position.x + gridWorldSize.x / 2) / gridWorldSize.x;
+        float percentY = (worldPosition.z - transform.position.y + gridWorldSize.y / 2) / gridWorldSize.y;
+
+        percentX = Mathf.Clamp01(percentX);
+        percentY = Mathf.Clamp01(percentY);
+
+        int x = Mathf.RoundToInt((gridSizeX - 1) * percentX);
+        int y = Mathf.RoundToInt((gridSizeY - 1) * percentY);
+
+        return grid[x, y];
+    }
+
+    public List<Node> path;
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
+
+        if (grid == null) return;
+
+        Node playerNode = GetNodeFromWorldPoint(player.position);
+        
+        foreach (Node node in grid)
+        {
+            Gizmos.color = node.walkable ? Color.white : Color.red;
+            if (playerNode == node)
+            {
+                Gizmos.color = Color.cyan;
+            }
+            if(path != null)
+                if (path.Contains(node))
+                    Gizmos.color = Color.black;
+                    
+            Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
         }
     }
-    
 }
