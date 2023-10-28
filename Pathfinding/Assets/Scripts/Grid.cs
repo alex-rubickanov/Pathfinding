@@ -14,6 +14,8 @@ public class Grid : MonoBehaviour
     private float nodeDiameter;
     private int gridSizeX, gridSizeY;
 
+    public int MaxSize => gridSizeX * gridSizeY;
+
     private void Start()
     {
         nodeDiameter = nodeRadius * 2;
