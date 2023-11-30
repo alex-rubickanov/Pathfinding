@@ -1,15 +1,20 @@
+using System;
 using UnityEngine;
 using System.Collections;
 
-public class Unit : MonoBehaviour {
+public class Unit : MonoBehaviour
+{
 
 
+    public Vector3 savedTargetPosition;
     public Transform target;
     public float speed = 20;
     Vector3[] path;
     int targetIndex;
 
-    void Start() {
+    void Start()
+    {
+        savedTargetPosition = target.position;
         PathRequestManager.RequestPath(transform.position,target.position, OnPathFound);
     }
 
@@ -52,6 +57,20 @@ public class Unit : MonoBehaviour {
                     Gizmos.DrawLine(path[i-1],path[i]);
                 }
             }
+        }
+    }
+
+    private void Update()
+    {
+        //OnTargetPositionChanged();
+    }
+
+    private void OnTargetPositionChanged()
+    {
+        if (target.position != savedTargetPosition)
+        {
+            PathRequestManager.RequestPath(transform.position,target.position, OnPathFound);
+            savedTargetPosition = target.position;
         }
     }
 }
