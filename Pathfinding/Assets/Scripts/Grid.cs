@@ -78,23 +78,23 @@ public class Grid : MonoBehaviour
         return grid[x, y];
     }
 
-    // private void OnDrawGizmos()
-    // {
-    //     Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
-    //
-    //     if (grid == null && !displayGridGizmos) return;
-    //
-    //     Node playerNode = GetNodeFromWorldPoint(player.position);
-    //     
-    //     foreach (Node node in grid)
-    //     {
-    //         Gizmos.color = node.walkable ? Color.white : Color.red;
-    //         if (playerNode == node)
-    //         {
-    //             Gizmos.color = Color.cyan;
-    //         }
-    //                 
-    //         Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
-    //     }
-    // }
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
+    
+        if (grid == null && !displayGridGizmos) return;
+    
+        Node playerNode = GetNodeFromWorldPoint(player.position);
+        
+        foreach (Node node in grid)
+        {
+            Gizmos.color = node.walkable ? Color.white : Color.red;
+            if (playerNode == node)
+            {
+                Gizmos.color = Color.cyan;
+            }
+                    
+            Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
+        }
+    }
 }
