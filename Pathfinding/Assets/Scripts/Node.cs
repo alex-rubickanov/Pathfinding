@@ -1,46 +1,39 @@
-using TMPro;
 using UnityEngine;
 
-public class Node : MonoBehaviour
+public class Node : IHeapItem<Node>
 {
-    public int x, y;
-    private Node parent;
+    public bool walkable;
+    public Vector3 worldPosition;
+    public int gridX, gridY;
 
-    [SerializeField] private TextMeshProUGUI coordinates;
-    
-    [SerializeField] private TextMeshProUGUI fCost;
-    [SerializeField] private TextMeshProUGUI gCost;
-    [SerializeField] private TextMeshProUGUI hCost;
-    
-    private int f; // sum of g and h
-    
-    private int g; // to start point
-    private int h; // to goal point
+    public int gCost, hCost;
 
-    private void Start()
+    public Node parent;
+    private int heapIndex;
+    public int fCost => gCost + hCost;
+
+    public Node(bool walkable, Vector3 worldPosition, int gridX, int gridY)
     {
-        coordinates.text = $"{x.ToString()}, {y.ToString()}";
+        this.walkable = walkable;
+        this.worldPosition = worldPosition;
+        this.gridX = gridX;
+        this.gridY = gridY;
     }
 
-
-    public void SetCoordinates(int newX, int newY)
+    public int HeapIndex
     {
-        x = newX;
-        y = newY;
+        get => heapIndex;
+        set => heapIndex = value;
     }
 
-    public void SetupVariables(Node startNode, Node goalNode)
+    public int CompareTo(Node nodeToCompare)
     {
-        int g = (Mathf.Abs(startNode.x - x) + Mathf.Abs(startNode.y - y)) * 10;
-        gCost.text = g.ToString();
-        int h = (Mathf.Abs(goalNode.x - x) + Mathf.Abs(goalNode.y - y)) * 10;
-        hCost.text = h.ToString();
-        int f = g + h;
-        fCost.text = f.ToString();
-    }
+        int compare = fCost.CompareTo(nodeToCompare.fCost);
+        if (compare == 0)
+        {
+            compare = hCost.CompareTo(nodeToCompare.hCost);
+        }
 
-    public void SetParent(Node node)
-    {
-        parent = node;
+        return -compare;
     }
 }
