@@ -66,13 +66,69 @@ public class Pathfinding : MonoBehaviour
                 }
             }
         }
+
         yield return null;
         if (pathSuccess)
         {
             waypoints = RetracePath(startNode, targetNode);
+            pathSuccess = waypoints.Length > 0;
         }
 
         requestManager.FinishedProcessingPath(waypoints, pathSuccess);
+    }
+
+    public void FindPathMT(PathRequest request, Action<PathResult> Callback)
+    {
+        Vector3[] waypoints = new Vector3[0];
+        bool pathSuccess = false;
+
+        Node startNode = grid.GetNodeFromWorldPoint(request.pathStart);
+        Node targetNode = grid.GetNodeFromWorldPoint(request.pathEnd);
+
+        if (startNode.walkable && targetNode.walkable)
+        {
+            Heap<Node> openSet = new Heap<Node>(grid.MaxSize);
+            HashSet<Node> closedSet = new HashSet<Node>();
+
+            openSet.Add(startNode);
+
+            while (openSet.Count > 0)
+            {
+                Node currentNode = openSet.RemoveFirst();
+                closedSet.Add(currentNode);
+
+                if (currentNode == targetNode)
+                {
+                    pathSuccess = true;
+                    break;
+                }
+
+                foreach (Node neighbour in grid.GetNeighbours(currentNode))
+                {
+                    if (!neighbour.walkable || closedSet.Contains(neighbour))
+                    {
+                        continue;
+                    }
+
+                    int newMovementCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbour);
+                    if (newMovementCostToNeighbour < neighbour.gCost || !openSet.Contains(neighbour))
+                    {
+                        neighbour.gCost = newMovementCostToNeighbour;
+                        neighbour.hCost = GetDistance(neighbour, targetNode);
+                        neighbour.parent = currentNode;
+
+                        if (!openSet.Contains(neighbour))
+                            openSet.Add(neighbour);
+                    }
+                }
+            }
+        }
+
+        if (pathSuccess)
+        {
+            waypoints = RetracePath(startNode, targetNode);
+        }
+        Callback(new PathResult(waypoints, pathSuccess, request.callback));
     }
 
     Vector3[] RetracePath(Node startNode, Node endNode)

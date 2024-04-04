@@ -1,18 +1,18 @@
 using UnityEngine;
 using System.Collections;
 
-public class Unit : MonoBehaviour
+public class UnitMT : MonoBehaviour
 {
     private const float minPathUpdateTime = 0.2f;
-    private const float pathUpdateMoveThreshold = 0.5f; 
+    private const float pathUpdateMoveThreshold = 0.5f;
 
     public Vector3 savedTargetPosition;
     public Transform target;
-    
+
     public float speed = 20f;
     public float turnSpeed = 3f;
     public float turnDst = 5f;
-    
+
     private Path path;
 
     void Start()
@@ -20,10 +20,12 @@ public class Unit : MonoBehaviour
         StartCoroutine(UpdatePath());
     }
 
-    public void OnPathFound(Vector3[] waypoints, bool pathSuccessful) {
-        if (pathSuccessful) {
+    public void OnPathFound(Vector3[] waypoints, bool pathSuccessful)
+    {
+        if (pathSuccessful)
+        {
             path = new Path(waypoints, transform.position, turnDst);
-            
+
             StopCoroutine("FollowPath");
             StartCoroutine("FollowPath");
         }
@@ -35,8 +37,9 @@ public class Unit : MonoBehaviour
         {
             yield return new WaitForSeconds(0.3f);
         }
-        PathRequestManager.RequestPath(transform.position, target.position, OnPathFound);
-        
+
+        PathRequestManagerMT.RequestPath(new PathRequest(transform.position, target.position, OnPathFound));
+
         float sqrMoveThreshold = pathUpdateMoveThreshold * pathUpdateMoveThreshold;
         Vector3 targetPosOld = target.position;
 
@@ -45,9 +48,8 @@ public class Unit : MonoBehaviour
             yield return new WaitForSeconds(minPathUpdateTime);
             if ((target.position - targetPosOld).sqrMagnitude > sqrMoveThreshold)
             {
-                PathRequestManager.RequestPath(transform.position, target.position, OnPathFound);
+                PathRequestManagerMT.RequestPath(new PathRequest(transform.position, target.position, OnPathFound));
                 targetPosOld = target.position;
-
             }
         }
     }
@@ -57,7 +59,7 @@ public class Unit : MonoBehaviour
         bool followingPath = true;
         int pathIndex = 0;
         transform.LookAt(path.lookPoints[0]);
-        
+
         while (followingPath)
         {
             Vector2 pos2D = new Vector2(transform.position.x, transform.position.z);
@@ -81,12 +83,13 @@ public class Unit : MonoBehaviour
                 transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * turnSpeed);
                 transform.Translate(Vector3.forward * Time.deltaTime * speed, Space.Self);
             }
-            yield return null;
 
+            yield return null;
         }
     }
 
-    public void OnDrawGizmos() {
+    public void OnDrawGizmos()
+    {
         if (path != null)
         {
             path.DrawWithGizmos();
@@ -102,7 +105,7 @@ public class Unit : MonoBehaviour
     {
         if (target.position != savedTargetPosition)
         {
-            PathRequestManager.RequestPath(transform.position,target.position, OnPathFound);
+            PathRequestManagerMT.RequestPath(new PathRequest(transform.position, target.position, OnPathFound));
             savedTargetPosition = target.position;
         }
     }
