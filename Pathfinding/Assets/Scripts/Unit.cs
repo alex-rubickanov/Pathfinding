@@ -17,6 +17,11 @@ public class Unit : MonoBehaviour
 
     void Start()
     {
+        //StartCoroutine(UpdatePath());
+    }
+
+    public void Execute()
+    {
         StartCoroutine(UpdatePath());
     }
 

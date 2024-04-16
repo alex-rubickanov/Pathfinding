@@ -1,5 +1,8 @@
+using System;
 using UnityEngine;
 using System.Collections;
+using System.Diagnostics;
+using Debug = UnityEngine.Debug;
 
 public class UnitMT : MonoBehaviour
 {
@@ -16,6 +19,11 @@ public class UnitMT : MonoBehaviour
     private Path path;
 
     void Start()
+    {
+        //StartCoroutine(UpdatePath());
+    }
+
+    public void Execute()
     {
         StartCoroutine(UpdatePath());
     }
@@ -56,6 +64,7 @@ public class UnitMT : MonoBehaviour
 
     IEnumerator FollowPath()
     {
+        
         bool followingPath = true;
         int pathIndex = 0;
         transform.LookAt(path.lookPoints[0]);
@@ -83,7 +92,7 @@ public class UnitMT : MonoBehaviour
                 transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * turnSpeed);
                 transform.Translate(Vector3.forward * Time.deltaTime * speed, Space.Self);
             }
-
+            
             yield return null;
         }
     }
