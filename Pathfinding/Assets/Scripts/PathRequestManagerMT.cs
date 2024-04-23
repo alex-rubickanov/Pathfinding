@@ -43,7 +43,7 @@ public class PathRequestManagerMT : MonoBehaviour
 
     public void FinishedProcessingPath(PathResult result)
     {
-        lock (results)
+        //lock (results)
         {
             results.Enqueue(result);
         }
